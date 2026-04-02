@@ -5,7 +5,7 @@ import History from "./pages/History";
 
 function AppContent() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-[#0b1120] transition-colors duration-300">
+    <div className="min-h-screen bg-[#F8F6F4] dark:bg-gray-950 transition-colors duration-300">
       <Navbar />
 
       <Routes>
