@@ -1,13 +1,6 @@
 import { useTheme } from "../context/ThemeContext";
-import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
   const { darkMode, toggleTheme } = useTheme();
 
   return (
@@ -28,12 +21,6 @@ export default function Navbar() {
         hover:scale-105 transition"
       >
         {darkMode ? "Light Mode ☀️" : "Dark Mode 🌙"}
-      </button>
-      <button
-        onClick={handleLogout}
-        className="px-4 py-2 rounded-lg bg-red-500 text-white hover:scale-105 transition"
-      >
-        Logout
       </button>
     </nav>
   );
