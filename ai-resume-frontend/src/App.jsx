@@ -10,6 +10,7 @@ import JDMatcher from "./pages/JDMatcher";
 import ResumeAnalyzerTool from "./pages/ResumeAnalyzerTool";
 import AdminDashboard from "./pages/AdminDashboard";
 import PaymentSettings from "./pages/PaymentSettings";
+import PaymentFlowGuide from "./pages/PaymentFlowGuide";
 
 function AppContent() {
   return (
@@ -27,6 +28,7 @@ function AppContent() {
         <Route path="/history" element={<History />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/payment-settings" element={<PaymentSettings />} />
+        <Route path="/payment-guide" element={<PaymentFlowGuide />} />
       </Routes>
     </div>
   );

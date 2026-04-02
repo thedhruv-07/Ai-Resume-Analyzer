@@ -22,6 +22,26 @@ export default function AdminDashboard() {
           Manage your Resume Analyzer business settings
         </p>
 
+        {/* Quick Info Card */}
+        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 mb-12">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-2">
+                💰 How Do You Receive Money?
+              </h3>
+              <p className="text-blue-800 dark:text-blue-200 max-w-2xl">
+                Customers pay via Stripe/Razorpay → Money is processed → Arrives in your bank account in 2-7 days
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/payment-guide")}
+              className="flex-shrink-0 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 text-white rounded-lg font-semibold transition"
+            >
+              View Payment Flow →
+            </button>
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Payment Setup Card */}
           <div className={`rounded-2xl border p-8 ${
