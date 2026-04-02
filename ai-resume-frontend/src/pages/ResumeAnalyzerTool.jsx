@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { useFreeTrial } from "../hooks/useFreeTrial";
+import PaywallModal from "../components/PaywallModal";
 
 export default function ResumeAnalyzerTool() {
   const navigate = useNavigate();
@@ -9,6 +11,8 @@ export default function ResumeAnalyzerTool() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { remaining, isLimitReached, useAnalysis } = useFreeTrial("resume-analyzer");
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files?.[0];
@@ -39,6 +43,14 @@ export default function ResumeAnalyzerTool() {
       setLoading(true);
       const { data } = await API.post("/resume/upload", formData);
       setResult(data.analysis);
+      
+      // Use one free analysis
+      const remainingAfter = useAnalysis();
+      
+      // Show paywall if no more free analyses
+      if (remainingAfter === 0) {
+        setTimeout(() => setShowPaywall(true), 2000);
+      }
     } catch (error) {
       setError(error.response?.data?.message || "Analysis failed");
     } finally {
@@ -184,14 +196,24 @@ export default function ResumeAnalyzerTool() {
         </button>
 
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E5E5E5] dark:border-gray-800 p-8">
-          <div className="mb-8">
-            <div className="text-5xl mb-4">📊</div>
-            <h1 className="text-3xl font-bold text-[#2D2D2D] dark:text-white mb-2">
-              Full Resume Analysis
-            </h1>
-            <p className="text-[#6B7280] dark:text-gray-400">
-              Get comprehensive AI-powered feedback on your resume. Includes ATS score, job match, strengths, weaknesses, and actionable recommendations.
-            </p>
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <div className="text-5xl mb-4">📊</div>
+              <h1 className="text-3xl font-bold text-[#2D2D2D] dark:text-white mb-2">
+                Full Resume Analysis
+              </h1>
+              <p className="text-[#6B7280] dark:text-gray-400">
+                Get comprehensive AI-powered feedback on your resume. Includes ATS score, job match, strengths, weaknesses, and actionable recommendations.
+              </p>
+            </div>
+            <div className="bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-900 rounded-lg px-3 py-2 text-right">
+              <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+                Free Analyses Left
+              </p>
+              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                {remaining}
+              </p>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -263,14 +285,28 @@ export default function ResumeAnalyzerTool() {
             {/* Button */}
             <button
               onClick={handleSubmit}
-              disabled={loading || !file}
+              disabled={loading || !file || isLimitReached}
               className="w-full py-3 bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 disabled:bg-gray-400 text-white font-semibold rounded-xl transition"
             >
-              {loading ? "Analyzing..." : "Get Full Analysis"}
+              {isLimitReached ? "Upgrade to Analyze More" : loading ? "Analyzing..." : "Get Full Analysis"}
             </button>
+
+            {isLimitReached && !showPaywall && (
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-center">
+                <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+                  You've used all 3 free analyses. Upgrade to continue.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <PaywallModal
+        isOpen={showPaywall}
+        toolName="Resume Analyzer"
+        onClose={() => setShowPaywall(false)}
+      />
     </div>
   );
 }

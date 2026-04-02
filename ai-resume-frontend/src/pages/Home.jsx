@@ -271,10 +271,19 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="px-6 py-12 bg-[#F8F6F4] dark:bg-gray-950 border-t border-[#E5E5E5] dark:border-gray-800">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-[#6B7280] dark:text-gray-400">
-            © 2026 Resume Analyzer. Built with ❤️ for job seekers.
-          </p>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center">
+            <p className="text-[#6B7280] dark:text-gray-400">
+              © 2026 Resume Analyzer. Built with ❤️ for job seekers.
+            </p>
+            <button
+              onClick={() => navigate("/admin")}
+              className="text-xs text-[#6B7280] dark:text-gray-600 hover:text-blue-600 dark:hover:text-blue-400 transition"
+              title="Admin Dashboard"
+            >
+              Admin ⚙️
+            </button>
+          </div>
         </div>
       </footer>
     </div>

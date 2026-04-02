@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { useFreeTrial } from "../hooks/useFreeTrial";
+import PaywallModal from "../components/PaywallModal";
 
 export default function JDMatcher() {
   const navigate = useNavigate();
@@ -9,6 +11,8 @@ export default function JDMatcher() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { remaining, isLimitReached, useAnalysis } = useFreeTrial("jd-match");
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files?.[0];
@@ -43,6 +47,14 @@ export default function JDMatcher() {
         file: file.name,
         missingKeywords: data.analysis.missingKeywords || []
       });
+      
+      // Use one free analysis
+      const remainingAfter = useAnalysis();
+      
+      // Show paywall if no more free analyses
+      if (remainingAfter === 0) {
+        setTimeout(() => setShowPaywall(true), 2000);
+      }
     } catch (error) {
       setError(error.response?.data?.message || "Analysis failed");
     } finally {
@@ -123,14 +135,24 @@ export default function JDMatcher() {
         </button>
 
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E5E5E5] dark:border-gray-800 p-8">
-          <div className="mb-8">
-            <div className="text-5xl mb-4">🎯</div>
-            <h1 className="text-3xl font-bold text-[#2D2D2D] dark:text-white mb-2">
-              JD Match Score
-            </h1>
-            <p className="text-[#6B7280] dark:text-gray-400">
-              See how well your resume matches a specific job description. Get alignment percentage and missing keywords.
-            </p>
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <div className="text-5xl mb-4">🎯</div>
+              <h1 className="text-3xl font-bold text-[#2D2D2D] dark:text-white mb-2">
+                JD Match Score
+              </h1>
+              <p className="text-[#6B7280] dark:text-gray-400">
+                See how well your resume matches a specific job description. Get alignment percentage and missing keywords.
+              </p>
+            </div>
+            <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-900 rounded-lg px-3 py-2 text-right">
+              <p className="text-xs font-semibold text-green-700 dark:text-green-300 uppercase tracking-wider">
+                Free Analyses Left
+              </p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {remaining}
+              </p>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -196,14 +218,28 @@ export default function JDMatcher() {
             {/* Button */}
             <button
               onClick={handleSubmit}
-              disabled={loading || !file}
+              disabled={loading || !file || isLimitReached}
               className="w-full py-3 bg-green-600 hover:bg-green-700 dark:bg-green-700 disabled:bg-gray-400 text-white font-semibold rounded-xl transition"
             >
-              {loading ? "Calculating Match..." : "Calculate Match Score"}
+              {isLimitReached ? "Upgrade to Match More" : loading ? "Calculating Match..." : "Calculate Match Score"}
             </button>
+
+            {isLimitReached && !showPaywall && (
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-center">
+                <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+                  You've used all 3 free analyses. Upgrade to continue.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <PaywallModal
+        isOpen={showPaywall}
+        toolName="JD Match Score"
+        onClose={() => setShowPaywall(false)}
+      />
     </div>
   );
 }

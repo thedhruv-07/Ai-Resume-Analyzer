@@ -28,6 +28,12 @@ export default function Navbar() {
             Tools
           </Link>
           <Link 
+            to="/pricing" 
+            className={`font-medium transition ${isActive("/pricing") ? "text-blue-600" : "text-[#6B7280] dark:text-gray-400 hover:text-[#2D2D2D] dark:hover:text-white"}`}
+          >
+            Pricing
+          </Link>
+          <Link 
             to="/dashboard" 
             className={`font-medium transition ${isActive("/dashboard") ? "text-blue-600" : "text-[#6B7280] dark:text-gray-400 hover:text-[#2D2D2D] dark:hover:text-white"}`}
           >
